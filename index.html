@@ -1,0 +1,183 @@
+
+<!DOCTYPE html>
+<html lang="tr">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Bir Özür Mesajı ❤️</title>
+<style>
+*{box-sizing:border-box}
+body{
+ margin:0;min-height:100vh;overflow:hidden;
+ display:flex;align-items:center;justify-content:center;
+ font-family:Arial,sans-serif;color:#86264e;
+ background:linear-gradient(135deg,#ffe2ed,#ffc1d8,#fff0f5);
+}
+.card{
+ width:90%;max-width:430px;padding:28px 20px;
+ border-radius:28px;background:#ffffffed;text-align:center;
+ box-shadow:0 12px 45px #c84d7940;position:relative;z-index:2;
+}
+.emoji{font-size:60px}
+h1{font-size:27px}
+p{font-size:17px;line-height:1.6}
+.buttons{display:flex;justify-content:center;gap:12px;flex-wrap:wrap;margin-top:25px}
+button{
+ border:0;border-radius:14px;padding:14px 20px;
+ font-size:16px;font-weight:bold;cursor:pointer;
+}
+#yes,#forgive{background:#f04f83;color:white}
+#no,#deny{background:#eee;color:#555}
+#final{display:none}
+#photo{
+ width:100%;max-height:330px;object-fit:contain;
+ border-radius:18px;margin-top:15px;
+ display:none;
+}
+.note{font-size:13px;color:#b56d8a;margin-top:20px}
+.heart{
+ position:fixed;bottom:-50px;pointer-events:none;
+ animation:rise linear forwards;z-index:5;
+}
+@keyframes rise{
+ to{transform:translateY(-115vh) rotate(360deg);opacity:0}
+}
+.confetti{
+ position:fixed;top:-20px;width:10px;height:15px;
+ z-index:10;pointer-events:none;
+ animation:fall linear forwards;
+}
+@keyframes fall{
+ to{transform:translateY(110vh) rotate(900deg);opacity:.8}
+}
+#deny{position:relative}
+</style>
+</head>
+<body>
+
+<div class="card" id="main">
+ <div class="emoji" id="emoji">💗</div>
+ <div class="note" id="step">SANA BİR ŞEY SORACAĞIM</div>
+ <h1 id="question">Beni seviyor musun?</h1>
+ <p id="description">Kalbinin cevabını merak ediyorum. 🥹</p>
+ <div class="buttons" id="buttons">
+  <button id="yes">Evet ❤️</button>
+  <button id="no">Hayır 🙈</button>
+ </div>
+ <div class="note" id="hint">Doğru cevabı biliyorsun bence 😚</div>
+</div>
+
+<div class="card" id="final">
+ <div class="emoji">🥺💗</div>
+ <h1>Beni affettin mi?</h1>
+ <p>Hatalarım için özür dilerim sevgilim. Seni üzmek istemedim. Bana bir şans daha verir misin? ❤️</p>
+ <div class="buttons">
+  <button id="forgive">Affettim ❤️</button>
+  <button id="deny">Affetmedim 💔</button>
+ </div>
+ <div id="loveMessage" style="display:none">
+  <h1>Yaşasın! 🥹❤️</h1>
+  <p>İyi ki varsın sevgilim! Seni çok seviyorum. Bir daha yüzünü güldürmek için elimden geleni yapacağım. 💖</p>
+  
+<img id="photo" src="bizim-fotografimiz.jpg"
+     alt="Birlikte fotoğrafımız"
+     style="width:100%;max-height:350px;object-fit:contain;border-radius:18px;margin-top:15px;">
+
+   
+   
+   <p id="photoError" style="display:none;font-size:13px">
+   Fotoğrafı index.html ile aynı klasöre bizim-fotografimiz.jpg adıyla koy.
+  </p>
+ </div>
+</div>
+
+<script>
+const questions=[
+ ["💗","Beni seviyor musun?","Kalbinin cevabını merak ediyorum. 🥹"],
+ ["🥺","Beni affeder misin?","Seni kırdığım için gerçekten üzgünüm. 💕"],
+ ["🧸","Bana bir şans daha verir misin?","Her şeyi daha güzel yapmak istiyorum. 🌹"],
+ ["💞","Yeniden sarılabilir miyiz?","Sana sımsıkı sarılmayı özledim. ❤️"]
+];
+let index=0;
+const $=id=>document.getElementById(id);
+const no=$("no"), deny=$("deny");
+
+function dodge(button){
+ button.style.position="fixed";
+ const margin=15;
+ const x=margin+Math.random()*Math.max(1,innerWidth-button.offsetWidth-margin*2);
+ const y=margin+Math.random()*Math.max(1,innerHeight-button.offsetHeight-margin*2);
+ button.style.left=x+"px";
+ button.style.top=y+"px";
+}
+no.addEventListener("pointerenter",()=>dodge(no));
+no.addEventListener("pointerdown",e=>{e.preventDefault();dodge(no)});
+no.addEventListener("click",e=>{e.preventDefault();dodge(no)});
+deny.addEventListener("pointerenter",()=>dodge(deny));
+deny.addEventListener("pointerdown",e=>{e.preventDefault();dodge(deny)});
+deny.addEventListener("click",e=>{e.preventDefault();dodge(deny)});
+
+$("yes").addEventListener("click",()=>{
+ index++;
+ if(index>=questions.length){
+  $("main").style.display="none";
+  $("final").style.display="block";
+  return;
+ }
+ $("emoji").textContent=questions[index][0];
+ $("question").textContent=questions[index][1];
+ $("description").textContent=questions[index][2];
+ $("step").textContent="SORU "+(index+1)+" / "+questions.length;
+ no.style.position="relative";
+ no.style.left="0";
+ no.style.top="0";
+});
+
+function celebrate(){
+ $("loveMessage").style.display="block";
+ $("forgive").style.display="none";
+ deny.style.display="none";
+ $("final").scrollTop=0;
+
+ // Kalp yağmuru
+ for(let i=0;i<65;i++){
+  setTimeout(()=>{
+   const h=document.createElement("div");
+   h.className="heart";
+   h.textContent=["❤️","💖","💕","💗","💘"][Math.floor(Math.random()*5)];
+   h.style.left=Math.random()*100+"vw";
+   h.style.fontSize=(20+Math.random()*30)+"px";
+   h.style.animationDuration=(3+Math.random()*4)+"s";
+   document.body.appendChild(h);
+   setTimeout(()=>h.remove(),7500);
+  },i*45);
+ }
+
+ // Renkli konfeti
+ for(let i=0;i<130;i++){
+  const c=document.createElement("div");
+  c.className="confetti";
+  c.style.left=Math.random()*100+"vw";
+  c.style.background=["#ff4081","#ffd54f","#7c4dff","#00bfa5","#ff7043"][i%5];
+  c.style.animationDuration=(2+Math.random()*3)+"s";
+  c.style.animationDelay=Math.random()*1.5+"s";
+  document.body.appendChild(c);
+  setTimeout(()=>c.remove(),6500);
+ }
+}
+$("forgive").addEventListener("click",celebrate);
+
+// İlk ekranda da hafif kalp animasyonu
+setInterval(()=>{
+ const h=document.createElement("div");
+ h.className="heart";
+ h.textContent="💕";
+ h.style.left=Math.random()*100+"vw";
+ h.style.fontSize="22px";
+ h.style.animationDuration="7s";
+ document.body.appendChild(h);
+ setTimeout(()=>h.remove(),7000);
+},900);
+</script>
+</body>
+</html>
